@@ -1,0 +1,17 @@
+{
+  "name": "projeto_loja-de-informatica",
+  "version": "1.0.0",
+  "description": "script de um site para a venda de equipamentos relacionados a area de informática",
+  "main": "/bin/www.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "startApp": "node bin/www.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.2",
+    "handlebars": "^4.7.8",
+    "mongoose": "^8.9.5"
+  }
+}
