@@ -3,7 +3,7 @@ const express = require('express');
 const app = express();
 
 // constantes
-const ROTA_PRINCIPAL = "/login"
+const ROTA_PRINCIPAL = "/login";
 
 // configurando o banco de dados
 require('./config/database');
@@ -30,7 +30,7 @@ app.get("/", (req, res) => {
 const template_generic_error = require("./views/genericError.hbs");
 app.all("/*", (req, res) => {
     res.status(404).render(template_generic_error, {
-        title: '404 - Not Found',
-        message: `The page you are looking for (${req.originalUrl}) does not exist.`
+        title: '404 - Não Encontrado',
+        message: `A pagina que você estava procurando (${req.originalUrl}) não existe!.`
     });
 })
