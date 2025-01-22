@@ -1,7 +1,8 @@
 const app = require('../src/app');
 const http = require('http');
+const args = process.argv.slice(2);
 
-const port = 3000;
+const port = args[0] | 3000;
 app.set('port', port);
 
 const server = http.createServer(app);

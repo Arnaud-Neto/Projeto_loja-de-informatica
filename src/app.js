@@ -6,7 +6,7 @@ const app = express();
 const ROTA_PRINCIPAL = "/login";
 
 // configurando o banco de dados
-require('./config/database');
+require('../config/database');
 
 // usando middleware basicos
 app.use(express.json());
