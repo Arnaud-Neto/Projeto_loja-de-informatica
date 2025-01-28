@@ -1,8 +1,8 @@
 // importações principais
 const express = require('express');
 const app = express();
+const hbs = require('hbs');
 const session = require('express-session');
-
 
 // configurando o banco de dados
 require('../config/database');
@@ -14,9 +14,10 @@ app.use(express.static('public'));
 app.set('view engine', 'hbs');
 app.use(session({
     secret: 'secret',
-    resave: true,
+    resave: false,
     saveUninitialized: true
-}));
+}));    
+
 
 // importando routers
 const loginRouter = require('./routers/LoginRouter');

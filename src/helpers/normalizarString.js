@@ -4,5 +4,5 @@ module.exports.normalizarString = function normalizarString(string) {
 }
 
 module.exports.noInvalidChars = function noInvalidChars(string) {
-    return string.replace(/[^a-zA-Z0-9!?-+=_]/g, "");
+    return "/[^a-zA-Z0-9!?-+=_]/g".test(string);
 }

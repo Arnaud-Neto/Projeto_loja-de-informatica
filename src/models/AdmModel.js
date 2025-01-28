@@ -11,6 +11,10 @@ const AdmSchema = new Schema({
         type: String,
         required: true
     },
+    nome_de_usuario:{
+        type: String,
+        required: true
+    },
     senha: {
         type: Number,
         required: true

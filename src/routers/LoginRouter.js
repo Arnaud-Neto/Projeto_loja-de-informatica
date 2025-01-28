@@ -1,64 +1,61 @@
-const session = require('express-session');
 const express = require('express');
 const LoginRouter = express.Router();
-const mongoose = require('mongoose');
-const crypto = require('crypto');
-const {normalizarString , noInvalidChars} = require('../helpers/normalizarString');
-const Usuario = mongoose.model('Usuario');
-const Adm = mongoose.model('Adm');
+const UsuarioController = require('../controllers/UsuarioController');
+const AdmController = require("../controllers/AdmController");
+
+// constates 
+const CAMINHO_PAGINA_PRINCIPAL = "/";
+const CAMINHO_PAGINA_PRINCIPAL_ADM = "/adm"
 
 
-LoginRouter.use(session({
-    secret:"secret",
-    resave: true,
-    saveUninitialized: true
-}));
+// rotas
 
-
-LoginRouter.get("/", (req, res) => {
+LoginRouter.get("/", (req, res) => { // tela de login
     res.render("login.hbs");
 });
 
 
-LoginRouter.post("/", (req, res) => {
-    const {nome_de_usuario, senha} = req.body; // pegando o nome de usuario e senha
+LoginRouter.post("/", (req, res) => { // efetuando login
 
-    // normalizando e removendo caracteres invalidos
-    nome_de_usuario = noInvalidChars(normalizarString(nome_de_usuario));
-    senha = noInvalidChars(senha);
-
+    const { nome_de_usuario, senha } = req.body; // pegando dados
     
-    let  senha_criptografada = crypto.createHash("sha256", senha + "secret");// criptografando a senha
-    Usuario.findOne({nome_de_usuario, senha_criptografada}) // procurando o usuario no banco de dados
-    .then(usuario => {
-        if(usuario){ // se o usuario existir
-
-            req.session.usuario = usuario; // setando o usuario na sessao
-            req.session.hash = crypto.createHash("sha256", senha_criptografada + session.id); // criando um hash para a sessao
-            res.redirect("/"); // redirecionando para a pagina principal
-        
-        } else { // se o usuario nao existir
-
-            let senha_criptografada = crypto.createHash("sha256", senha + "secret" + "admin"); // criptografando a senha para admin
-            Adm.findOne({nome_de_usuario, senha_criptografada}) // procurando o admin no banco de dados
-            .then((adm) => { 
-                if(adm){ // se o admin existir
-
-                    req.session.adm = adm; // setando o admin na sessao
-                    req.session.hash = crypto.createHash("sha256", senha_criptografada + session.id); // criando um hash para a sessao
-                    res.redirect("/dev"); // redirecionando para a pagina dev
-
-                } else { // se o admin nao existir
-
-                    res.render("login.hbs", {
-                        message: "Nome de usuário ou senha inválidos!" // enviando uma mensagem de erro
-                    });
-                }
-            })
-        }
+    UsuarioController.autenticarUsuario(nome_de_usuario, senha) // autenticando usuario
+    .then((usuario) => { // usuario encotrado
+        req.session.usuario = usuario; // adicionando a session
+        res.redirect(CAMINHO_PAGINA_PRINCIPAL); // redirecionando para a pagina principal
     })
-    .catch(err => { // se ocorrer um erro
-        res.status(500).send("Erro interno no servidor!"); // enviando uma mensagem de erro
+    .catch((error) => { // error
+        res.status(401).render("login.hbs", { // tela de login
+            error: error.message // renderisando messagem de error
+        });
+    });
+});
+
+
+LoginRouter.get("/logout", (req, res) => { // logout
+    req.session.usuario = undefined; // retirando dados do usuario
+    res.redirect(CAMINHO_PAGINA_PRINCIPAL); // redirecionando a pagina principal
+});
+
+
+LoginRouter.get("/adm", (req, res) => { // tela de login para adimins
+    res.render("loginAdm.hbs"); 
+});
+
+
+LoginRouter.post("/adm", (req, res) => { // efetuando o login como adm
+
+    const { nome_de_usuario, senha } = req.body; // pegando dados
+    
+    AdmController.autenticarUsuario(nome_de_usuario, senha) // autenticando adm
+    .then((usuario) => { // adm encontrado
+        req.session.usuario = usuario; // gardando dados na session
+        res.redirect(CAMINHO_PAGINA_PRINCIPAL_ADM); // redirecionando para a pagina principal do adm
+    })
+    .catch((error) => { // error
+        res.status(401).render("loginAdm.hbs", { // tela de login adm
+            error: error.message // renderisando menssagem de erro
+        });
     });
 });
 
